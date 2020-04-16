@@ -1,0 +1,18 @@
+{
+    "name": "themesgrove/simple-edd-changelog",
+    "description": "Display changlog for EDD download.",
+    "authors": [{
+        "name": "ThemesGrove"
+    }, {
+        "name": "Al-Amin Firdows"
+    }],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "ThemesGrove\\EDDChangelog\\": "includes/"
+        },
+        "files": [
+            "includes/helpers.php"
+        ]
+    }
+}
