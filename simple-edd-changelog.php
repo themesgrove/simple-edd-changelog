@@ -17,13 +17,8 @@
  * Tested up to: 5.4
  */
 
-namespace ThemesGrove\EDDChangelog;
-
 // Exit if accessed directly.
 if (!defined('ABSPATH')) exit;
-
-// Includes vendor files.
-require_once __DIR__ . '/vendor/autoload.php';
 
 final class EDDChangelog
 {
@@ -92,8 +87,8 @@ final class EDDChangelog
     {
         register_activation_hook(__FILE__, [$this, 'activate']);
 
-        // Load shortcode
-        shortcode();
+        // Add shortcode
+        add_shortcode('edd_changelog', [$this, 'changelog_shortcode']);
     }
 
     /**
@@ -114,29 +109,32 @@ final class EDDChangelog
     }
 
     /**
-     * Cloning is forbidden.
+     * The [edd_changelog] shortcode.
      *
-     * This method protect the class to cloneing instance.
-     *
-     * @since 0.1
      * @access public
+     * @since 1.0
+     * @return string
      */
-    public function __clone()
+    public static function changelog_shortcode($atts)
     {
-        _doing_it_wrong(__FUNCTION__, __('Cloning is forbidden!', 'simple-edd-changelog'), '0.1');
-    }
+        if (!isset($atts['id'])) {
+            return;
+        }
 
-    /**
-     * Unserialize instances of this class is forbidden.
-     *
-     * This method protect the class to create unserialize instances.
-     *
-     * @since 0.1
-     * @access public
-     */
-    public function __wakeup()
-    {
-        _doing_it_wrong(__FUNCTION__, __('Unserialize instances is forbidden!', 'simple-edd-changelog'), '0.1');
+        $changelog = get_post_meta($atts['id'], '_edd_sl_changelog', TRUE);
+
+        //  Sanitize the HTML from the change log field data.
+        $changelog = balanceTags(wp_kses_post($changelog), TRUE);
+
+        if (!empty($changelog)) {
+            $html = sprintf(
+                '<div class="edd-changelog"><h2>%1$s</h2>%2$s</div>',
+                $atts['title'] ?? 'Changelog',
+                $changelog
+            );
+        }
+
+        return $html;
     }
 }
 
